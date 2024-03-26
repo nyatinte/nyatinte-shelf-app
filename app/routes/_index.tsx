@@ -1,33 +1,37 @@
-import type { MetaFunction } from "@remix-run/cloudflare";
+import type { MetaFunction } from '@remix-run/cloudflare';
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
+    { title: 'New Remix App' },
     {
-      name: "description",
-      content: "Welcome to Remix! Using Vite and Cloudflare!",
+      name: 'description',
+      content: 'Welcome to Remix! Using Vite and Cloudflare!',
     },
   ];
 };
 
 export default function Index() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.8" }}>
-      <h1>Welcome to Remix (with Vite and Cloudflare)</h1>
+    <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.8' }}>
       <ul>
         <li>
-          <a
-            target="_blank"
-            href="https://developers.cloudflare.com/pages/framework-guides/deploy-a-remix-site/"
-            rel="noreferrer"
+          <button
+            onClick={async () => {
+              const res = await fetch('api/articles');
+              console.log(await res.json());
+            }}
           >
-            Cloudflare Pages Docs - Remix guide
-          </a>
+            get
+          </button>
         </li>
         <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
+          <button></button>
+        </li>
+        <li>
+          <button></button>
+        </li>
+        <li>
+          <button></button>
         </li>
       </ul>
     </div>
