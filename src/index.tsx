@@ -1,7 +1,15 @@
+import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
 import { renderToString } from 'react-dom/server';
+import { articles as articlesTable } from './schema';
+import { zValidator } from '@hono/zod-validator';
+import { z } from 'zod';
 
-const app = new Hono();
+type Bindings = {
+  DB: D1Database;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
 
 app.get('/api/clock', (c) => {
   return c.json({
@@ -9,7 +17,40 @@ app.get('/api/clock', (c) => {
   });
 });
 
+app.get('api/articles', async (c) => {
+  const db = drizzle(c.env.DB);
+  const articles = await db.select().from(articlesTable).all();
+  return c.json(articles);
+});
+
+app.post(
+  'api/articles',
+  zValidator(
+    'form',
+    z.object({
+      url: z.string().url(),
+    }),
+    (result, c) => {
+      if (!result.success) {
+        return c.text(result.error.issues.map((i) => i.message).join('\n'));
+      }
+    }
+  ),
+  async (c) => {
+    const { url } = c.req.valid('form');
+    const db = drizzle(c.env.DB);
+
+    const newArticle = await db
+      .insert(articlesTable)
+      .values({ url })
+      .returning();
+    c.status(201);
+    return c.json(newArticle[0]);
+  }
+);
+
 app.get('/', (c) => {
+  console.log(c.env);
   return c.html(
     renderToString(
       <html>

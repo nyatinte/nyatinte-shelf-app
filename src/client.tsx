@@ -10,6 +10,10 @@ function App() {
       <Counter />
       <h2>Example of API fetch()</h2>
       <ClockButton />
+      <form method='post' action='/api/articles'>
+        <label htmlFor='url'></label>
+        <input type='url' id='url' name='url' />
+      </form>
     </>
   );
 }
