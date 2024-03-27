@@ -5,7 +5,7 @@ import type {
 } from '@remix-run/cloudflare';
 import { Form, json, useLoaderData } from '@remix-run/react';
 import { drizzle } from 'drizzle-orm/d1';
-import { articles } from '~/db/schema';
+import { articles } from '@/db/schema';
 
 export const meta: MetaFunction = () => {
   return [

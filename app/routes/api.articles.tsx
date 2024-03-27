@@ -3,7 +3,7 @@ import {
   json,
   LoaderFunctionArgs,
 } from '@remix-run/cloudflare';
-import { httpMethodSchema } from '~/utils/server/httpMethod';
+import { httpMethodSchema } from '@/utils/server/httpMethod';
 
 type Article = {
   id: string;
