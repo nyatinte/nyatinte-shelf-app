@@ -1,6 +1,7 @@
 import pages from '@hono/vite-cloudflare-pages';
 import devServer from '@hono/vite-dev-server';
 import { defineConfig } from 'vite';
+import path from 'path';
 
 export default defineConfig(({ mode }) => {
   if (mode === 'client') {
@@ -11,6 +12,11 @@ export default defineConfig(({ mode }) => {
           output: {
             entryFileNames: 'static/client.js',
           },
+        },
+      },
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, './src'),
         },
       },
     };
@@ -25,6 +31,11 @@ export default defineConfig(({ mode }) => {
           entry: 'src/index.tsx',
         }),
       ],
+      resolve: {
+        alias: {
+          '@': path.resolve(__dirname, './src'),
+        },
+      },
     };
   }
 });
