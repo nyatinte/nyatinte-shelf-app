@@ -1,4 +1,11 @@
-import type { MetaFunction } from '@remix-run/cloudflare';
+import type {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from '@remix-run/cloudflare';
+import { Form, json, useLoaderData } from '@remix-run/react';
+import { drizzle } from 'drizzle-orm/d1';
+import { articles } from '~/db/schema';
 
 export const meta: MetaFunction = () => {
   return [
@@ -10,7 +17,29 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+export async function loader({ context }: LoaderFunctionArgs) {
+  const db = drizzle(context.cloudflare.env.NYATINTE_SHELF_DB);
+  const result = await db.select().from(articles).all();
+  console.log(result);
+  return json(result);
+}
+
+export async function action({ context }: ActionFunctionArgs) {
+  const db = drizzle(context.cloudflare.env.NYATINTE_SHELF_DB);
+
+  const result = await db
+    .insert(articles)
+    .values({
+      url: 'https://example.com',
+    })
+    .returning();
+  console.log(result);
+  return json(result);
+}
+
 export default function Index() {
+  const articles = useLoaderData<typeof loader>();
+  console.log(articles);
   return (
     <div style={{ fontFamily: 'system-ui, sans-serif', lineHeight: '1.8' }}>
       <ul>
@@ -24,16 +53,11 @@ export default function Index() {
             get
           </button>
         </li>
-        <li>
-          <button></button>
-        </li>
-        <li>
-          <button></button>
-        </li>
-        <li>
-          <button></button>
-        </li>
       </ul>
+
+      <Form method='post'>
+        <button type='submit'>Submit</button>
+      </Form>
     </div>
   );
 }
