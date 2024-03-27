@@ -9,7 +9,8 @@
 # binding = "MY_BUCKET"
 # bucket_name = "my-bucket"
 
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "my-database"
-# database_id = ""
+[[d1_databases]]
+binding = "DB"
+database_name = "nyatinte-shelf-db"
+database_id = "d061f83a-0d18-4a97-9328-e1a24a4348d6"
+migrations_dir = "drizzle/migrations"

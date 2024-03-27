@@ -4,11 +4,15 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "wrangler pages dev dist",
-    "deploy": "$npm_execpath run build && wrangler pages deploy dist"
+    "deploy": "$npm_execpath run build && wrangler pages deploy dist",
+    "generate": "drizzle-kit generate:sqlite",
+    "migrate:local": "wrangler d1 migrations apply nyatinte-shelf-db --local"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",
+    "drizzle-kit": "^0.20.14",
+    "drizzle-orm": "^0.30.5",
     "hono": "^4.1.4",
     "lucide-react": "^0.363.0",
     "react": "^18.2.0",
