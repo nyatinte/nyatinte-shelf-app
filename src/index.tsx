@@ -57,6 +57,16 @@ app.get('/', (c) => {
         <head>
           <meta charSet='utf-8' />
           <meta content='width=device-width, initial-scale=1' name='viewport' />
+          <link rel='preconnect' href='https://fonts.googleapis.com' />
+          <link
+            rel='preconnect'
+            href='https://fonts.gstatic.com'
+            crossOrigin=''
+          />
+          <link
+            href='https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap'
+            rel='stylesheet'
+          />
           {import.meta.env.PROD ? (
             <script type='module' src='/static/client.js'></script>
           ) : (

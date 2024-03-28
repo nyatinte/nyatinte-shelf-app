@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 function App() {
   return (
-    <>
+    <div className='font-noto-sans-jp'>
       <h1 className='text-blue-700'>Hello, Hono with React!</h1>
       <h2>Example of useState()</h2>
       <Counter />
@@ -14,7 +14,7 @@ function App() {
         <label htmlFor='url'></label>
         <input type='url' id='url' name='url' />
       </form>
-    </>
+    </div>
   );
 }
 
