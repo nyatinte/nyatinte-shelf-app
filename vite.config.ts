@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
             entryFileNames: 'static/client.js',
           },
         },
+        assetsDir: 'static',
       },
       resolve: {
         alias: {
@@ -33,6 +34,10 @@ export default defineConfig(({ mode }) => {
           adapter: cloudflareAdapter,
         }),
       ],
+      build: {
+        assetsDir: 'static',
+        ssrEmitAssets: true,
+      },
       resolve: {
         alias: {
           '@': path.resolve(__dirname, './src'),

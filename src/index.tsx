@@ -4,6 +4,7 @@ import { renderToString } from 'react-dom/server';
 import { articles as articlesTable } from './schema';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
+import style from './style.css?url';
 
 type Bindings = {
   DB: D1Database;
@@ -67,10 +68,16 @@ app.get('/', (c) => {
             href='https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap'
             rel='stylesheet'
           />
+
           {import.meta.env.PROD ? (
-            <script type='module' src='/static/client.js'></script>
+            <>
+              <link rel='stylesheet' href={style} />
+              <script type='module' src='/static/client.js'></script>
+            </>
           ) : (
-            <script type='module' src='/src/client.tsx'></script>
+            <>
+              <script type='module' src='/src/client.tsx'></script>
+            </>
           )}
         </head>
         <body>
