@@ -18,11 +18,46 @@ app.get('/api/clock', (c) => {
   });
 });
 
-app.get('api/articles', async (c) => {
-  const db = drizzle(c.env.DB);
-  const articles = await db.select().from(articlesTable).all();
-  return c.json(articles);
-});
+app.get(
+  'api/articles',
+  zValidator(
+    'query',
+    z.object({ page: z.coerce.number(), limit: z.coerce.number() }),
+    (result, c) => {
+      if (!result.success) {
+        c.status(400);
+        return c.text(result.error.issues.map((i) => i.message).join('\n'));
+      }
+    }
+  ),
+  async (c) => {
+    const { page, limit } = c.req.valid('query');
+    const articles: Article[] = Array.from({ length: limit }, (_, i) => ({
+      title: `Article ${page * limit + i}`,
+      description: `Description ${page * limit + i}`,
+      imageSrc: `https://picsum.photos/seed/${page * limit + i}/200/200`,
+      imageAlt: `Image ${page * limit + i}`,
+      url: `https://example.com/${page * limit + i}`,
+      id: page * limit + i,
+      createdAt: new Date().toISOString(),
+    }));
+    await new Promise((r) => setTimeout(r, 1000));
+
+    // const db = drizzle(c.env.DB);
+    // const articles = await db.select().from(articlesTable).all();
+    return c.json(articles);
+  }
+);
+
+export type Article = {
+  title?: string | undefined;
+  description?: string | undefined;
+  imageSrc: string;
+  imageAlt: string;
+  url: string;
+  id: number;
+  createdAt: string;
+};
 
 app.post(
   'api/articles',
@@ -47,32 +82,6 @@ app.post(
       .returning();
     c.status(201);
     return c.json(newArticle[0]);
-  }
-);
-
-app.get(
-  'users',
-  zValidator(
-    'query',
-    z.object({ page: z.coerce.number(), limit: z.coerce.number() }),
-    (result, c) => {
-      if (!result.success) {
-        c.status(400);
-        return c.text(result.error.issues.map((i) => i.message).join('\n'));
-      }
-    }
-  ),
-  async (c) => {
-    const { page, limit } = c.req.valid('query');
-
-    const users = Array.from({ length: limit }).map((_, i) => {
-      return {
-        id: i + page * limit,
-        name: `user-${i + page * limit}`,
-      };
-    });
-    await new Promise((r) => setTimeout(r, 1000));
-    return c.json(users);
   }
 );
 

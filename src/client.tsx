@@ -7,24 +7,24 @@ import {
 } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useRef } from 'react';
+import { Article } from '.';
+import { LinkCard, LinkCardSkeleton } from './components/link-card';
 
 const queryClient = new QueryClient();
 
-type User = {
-  id: number;
-  name: string;
-};
 async function fetchPage(
   limit: number,
   offset: number = 0
-): Promise<{ rows: User[]; nextOffset: number }> {
-  const rows = (await fetch(`/users?page=${offset}&limit=${limit}`).then(
-    (res) => res.json()
-  )) as User[];
+): Promise<{ articles: Article[]; nextOffset: number }> {
+  const url = new URL('/api/articles', window.location.origin);
+  url.searchParams.set('page', offset.toString());
+  url.searchParams.set('limit', limit.toString());
 
-  await new Promise((r) => setTimeout(r, 500));
+  const articles = (await fetch(url.toString()).then((res) =>
+    res.json()
+  )) as Article[];
 
-  return { rows, nextOffset: offset + 1 };
+  return { articles, nextOffset: offset + 1 };
 }
 
 function App() {
@@ -35,22 +35,23 @@ function App() {
     isFetchingNextPage,
     fetchNextPage,
     hasNextPage,
-  } = useInfiniteQuery<{ rows: User[]; nextOffset: number }>({
+  } = useInfiniteQuery<Awaited<ReturnType<typeof fetchPage>>>({
     queryKey: ['articles'],
     initialPageParam: 0,
     queryFn: (ctx) =>
       fetchPage(10, typeof ctx.pageParam === 'number' ? ctx.pageParam : 0),
     getNextPageParam: (_lastGroup, groups) => groups.length,
   });
-  const allRows = data ? data.pages.flatMap((d) => d.rows) : [];
+  const allArticles = data ? data.pages.flatMap((d) => d.articles) : [];
 
   const parentRef = useRef<HTMLDivElement>(null);
 
   const rowVirtualizer = useVirtualizer({
-    count: hasNextPage ? allRows.length + 1 : allRows.length,
+    count: hasNextPage ? allArticles.length + 1 : allArticles.length,
     getScrollElement: () => parentRef.current,
+    gap: 16,
     // 推定されるアイテムの高さ
-    estimateSize: () => 100,
+    estimateSize: () => 128,
     // 10 → 10個前のアイテムが表示された時点で追加のアイテムをフェッチする
     overscan: 0,
   });
@@ -63,7 +64,7 @@ function App() {
     }
 
     if (
-      lastItem.index >= allRows.length - 1 &&
+      lastItem.index >= allArticles.length - 1 &&
       hasNextPage &&
       !isFetchingNextPage
     ) {
@@ -72,17 +73,17 @@ function App() {
   }, [
     hasNextPage,
     fetchNextPage,
-    allRows.length,
+    allArticles.length,
     isFetchingNextPage,
     rowVirtualizer.getVirtualItems(),
   ]);
 
   return (
-    <div>
+    <div className='container'>
       {status === 'pending' ? (
-        <div className='space-y-20'>
+        <div className='space-y-4'>
           {Array.from({ length: 10 }).map(() => (
-            <Skeleton />
+            <LinkCardSkeleton />
           ))}
         </div>
       ) : status === 'error' ? (
@@ -99,8 +100,8 @@ function App() {
             }}
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const isLoaderRow = virtualRow.index > allRows.length - 1;
-              const post = allRows[virtualRow.index];
+              const isLoaderRow = virtualRow.index > allArticles.length - 1;
+              const article = allArticles[virtualRow.index];
 
               return (
                 <div
@@ -113,16 +114,16 @@ function App() {
                 >
                   {isLoaderRow ? (
                     hasNextPage ? (
-                      <div className='space-y-20'>
-                        {Array.from({ length: 10 }).map(() => (
-                          <Skeleton />
+                      <div className='space-y-4'>
+                        {Array.from({ length: 10 }).map((_, i) => (
+                          <LinkCardSkeleton key={i} />
                         ))}
                       </div>
                     ) : (
                       'Nothing more to load'
                     )
                   ) : (
-                    JSON.stringify(post)
+                    <LinkCard {...article} />
                   )}
                 </div>
               );
