@@ -1,58 +1,42 @@
 import './style.css';
 import { createRoot } from 'react-dom/client';
-import { useState } from 'react';
+import useSWRInfinite from 'swr/infinite';
+
+const getKey = (pageIndex: number, previousPageData: any | null) => {
+  if (previousPageData && !previousPageData.length) return null; // 最後に到達した
+  return `/users?page=${pageIndex}&limit=10`; // SWR キー
+};
+
+type User = {
+  id: number;
+  name: string;
+};
+const fetcher = (args: string) =>
+  fetch(args).then((res) => res.json() as Promise<User[]>);
 
 function App() {
-  return (
-    <div className='font-noto-sans-jp'>
-      <h1 className='text-blue-700'>Hello, Hono with React!</h1>
-      <h2>Example of useState()</h2>
-      <Counter />
-      <h2>Example of API fetch()</h2>
-      <ClockButton />
-      <form method='post' action='/api/articles'>
-        <label htmlFor='url'></label>
-        <input type='url' id='url' name='url' />
-      </form>
-    </div>
-  );
-}
+  const { data, size, setSize } = useSWRInfinite<User[]>(getKey, fetcher, {
+    revalidateOnFocus: false,
+  });
+  if (!data) return 'loading';
 
-function Counter() {
-  const [count, setCount] = useState(0);
-  return (
-    <button onClick={() => setCount(count + 1)}>
-      You clicked me {count} times
-    </button>
-  );
-}
-
-const ClockButton = () => {
-  const [response, setResponse] = useState<string | null>(null);
-
-  const handleClick = async () => {
-    const response = await fetch('/api/clock');
-    const data = await response.json();
-    const headers = Array.from(response.headers.entries()).reduce(
-      (acc, [key, value]) => ({ ...acc, [key]: value }),
-      {}
-    );
-    const fullResponse = {
-      url: response.url,
-      status: response.status,
-      headers,
-      body: data,
-    };
-    setResponse(JSON.stringify(fullResponse, null, 2));
-  };
+  // これで、すべてのユーザー数を計算できます
+  let totalUsers = 0;
+  for (let i = 0; i < data.length; i++) {
+    totalUsers += data[i].length;
+  }
 
   return (
     <div>
-      <button onClick={handleClick}>Get Server Time</button>
-      {response && <pre>{response}</pre>}
+      <p>{totalUsers} ユーザーがリストされています</p>
+      {data.map((users) => {
+        // `data` は、各ページの API レスポンスの配列です
+        return users.map((user) => <div key={user.id}>{user.name}</div>);
+      })}
+      <button onClick={() => setSize(size + 1)}>さらに読み込む</button>
     </div>
   );
-};
+}
 
 const domNode = document.getElementById('root')!;
 const root = createRoot(domNode);

@@ -50,6 +50,32 @@ app.post(
   }
 );
 
+app.get(
+  'users',
+  zValidator(
+    'query',
+    z.object({ page: z.coerce.number(), limit: z.coerce.number() }),
+    (result, c) => {
+      if (!result.success) {
+        c.status(400);
+        return c.text(result.error.issues.map((i) => i.message).join('\n'));
+      }
+    }
+  ),
+  async (c) => {
+    const { page, limit } = c.req.valid('query');
+
+    const users = Array.from({ length: limit }).map((_, i) => {
+      return {
+        id: i + page * limit,
+        name: `user-${i + page * limit}`,
+      };
+    });
+    await new Promise((r) => setTimeout(r, 1000));
+    return c.json(users);
+  }
+);
+
 app.get('/', (c) => {
   return c.html(
     renderToString(
