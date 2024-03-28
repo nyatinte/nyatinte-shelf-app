@@ -51,7 +51,6 @@ app.post(
 );
 
 app.get('/', (c) => {
-  console.log(c.env);
   return c.html(
     renderToString(
       <html>
