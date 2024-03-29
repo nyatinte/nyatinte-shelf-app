@@ -36,6 +36,7 @@ function App() {
     fetchNextPage,
     hasNextPage,
   } = useInfiniteQuery<Awaited<ReturnType<typeof fetchPage>>>({
+    // TODO: QueryKeyを使ってFilter機能を実装する
     queryKey: ['articles'],
     initialPageParam: 0,
     queryFn: (ctx) =>
@@ -134,10 +135,6 @@ function App() {
     </div>
   );
 }
-
-const Skeleton = () => {
-  return <div className='animate-pulse h-4 w-32 bg-slate-600' />;
-};
 
 const domNode = document.getElementById('root')!;
 const root = createRoot(domNode);
