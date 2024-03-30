@@ -1,12 +1,13 @@
 {
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vite build --mode client && vite build",
     "preview": "wrangler pages dev dist",
     "deploy": "$npm_execpath run build && wrangler pages deploy dist",
     "generate": "drizzle-kit generate:sqlite",
-    "migrate:local": "wrangler d1 migrations apply nyatinte-shelf-db --local"
+    "migrate:local": "wrangler d1 migrations apply nyatinte-shelf-db --local",
+    "studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.1",
@@ -28,6 +29,8 @@
     "@cloudflare/workers-types": "^4.20240208.0",
     "@hono/vite-cloudflare-pages": "^0.2.4",
     "@hono/vite-dev-server": "^0.9.0",
+    "@types/bun": "^1.0.11",
+    "@types/jsdom": "^21.1.6",
     "@types/react": "^18.2.72",
     "@types/react-dom": "^18.2.22",
     "autoprefixer": "^10.4.19",

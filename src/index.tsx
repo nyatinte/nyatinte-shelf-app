@@ -1,22 +1,20 @@
 import { drizzle } from 'drizzle-orm/d1';
 import { Hono } from 'hono';
 import { renderToString } from 'react-dom/server';
-import { articles as articlesTable } from './schema';
+import { Article, articles as articlesTable } from './schema';
 import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import style from './style.css?url';
+import { scraper } from './lib/scraper';
+import { asc } from 'drizzle-orm';
+import { apiKeyValidator } from './middlewares/apiKeyValidator';
 
-type Bindings = {
+export type Bindings = {
   DB: D1Database;
+  API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
-
-app.get('/api/clock', (c) => {
-  return c.json({
-    time: new Date().toLocaleTimeString(),
-  });
-});
 
 app.get(
   'api/articles',
@@ -32,53 +30,44 @@ app.get(
   ),
   async (c) => {
     const { page, limit } = c.req.valid('query');
-    const articles: Article[] = Array.from({ length: limit }, (_, i) => ({
-      title: `Article ${page * limit + i}`,
-      description: `Description ${page * limit + i}`,
-      imageSrc: `https://picsum.photos/seed/${page * limit + i}/200/200`,
-      imageAlt: `Image ${page * limit + i}`,
-      url: `https://example.com/${page * limit + i}`,
-      id: page * limit + i,
-      createdAt: new Date().toISOString(),
-    }));
-    await new Promise((r) => setTimeout(r, 1000));
 
-    // const db = drizzle(c.env.DB);
-    // const articles = await db.select().from(articlesTable).all();
+    const db = drizzle(c.env.DB);
+    const articles = await db
+      .select()
+      .from(articlesTable)
+      .orderBy(asc(articlesTable.createdAt))
+      .limit(limit)
+      .offset(page * limit)
+      .all();
     return c.json(articles);
   }
 );
 
-export type Article = {
-  title?: string | undefined;
-  description?: string | undefined;
-  imageSrc: string;
-  imageAlt: string;
-  url: string;
-  id: number;
-  createdAt: string;
-};
-
 app.post(
   'api/articles',
+  apiKeyValidator,
   zValidator(
-    'form',
+    'json',
     z.object({
       url: z.string().url(),
     }),
     (result, c) => {
+      console.log(result);
       if (!result.success) {
         return c.text(result.error.issues.map((i) => i.message).join('\n'));
       }
     }
   ),
   async (c) => {
-    const { url } = c.req.valid('form');
+    const { url } = await c.req.valid('json');
+
+    const meta = await scraper(url);
+
     const db = drizzle(c.env.DB);
 
     const newArticle = await db
       .insert(articlesTable)
-      .values({ url })
+      .values({ url, ...meta })
       .returning();
     c.status(201);
     return c.json(newArticle[0]);
@@ -88,10 +77,15 @@ app.post(
 app.get('/', (c) => {
   return c.html(
     renderToString(
-      <html>
+      <html lang='ja'>
         <head>
+          <title>Nyatinte Shelf</title>
+          <meta name='description' content='Nyatinteの技術記事積読サイト' />
           <meta charSet='utf-8' />
           <meta content='width=device-width, initial-scale=1' name='viewport' />
+          {/* No Index */}
+          <meta name='robots' content='noindex' />
+          {/* Google Fonts  */}
           <link rel='preconnect' href='https://fonts.googleapis.com' />
           <link
             rel='preconnect'
@@ -102,7 +96,41 @@ app.get('/', (c) => {
             href='https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap'
             rel='stylesheet'
           />
-
+          {/* Android Chrome Icons  */}
+          <link
+            rel='icon'
+            type='image/png'
+            sizes='192x192'
+            href='/static/android-chrome-192x192.png'
+          />
+          <link
+            rel='icon'
+            type='image/png'
+            sizes='512x512'
+            href='/static/android-chrome-512x512.png'
+          />
+          {/* Apple Touch Icon  */}
+          <link
+            rel='apple-touch-icon'
+            sizes='180x180'
+            href='/static/apple-touch-icon.png'
+          />
+          {/* Favicon  */}
+          <link
+            rel='icon'
+            type='image/png'
+            sizes='16x16'
+            href='/static/favicon-16x16.png'
+          />
+          <link
+            rel='icon'
+            type='image/png'
+            sizes='32x32'
+            href='/static/favicon-32x32.png'
+          />
+          <link rel='shortcut icon' href='/static/favicon.ico' />
+          {/* Webmanifest  */}
+          <link rel='manifest' href='/static/site.webmanifest' />
           {import.meta.env.PROD ? (
             <>
               <link rel='stylesheet' href={style} />
