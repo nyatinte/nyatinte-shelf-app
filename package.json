@@ -7,6 +7,8 @@
     "deploy": "$npm_execpath run build && wrangler pages deploy dist",
     "generate": "drizzle-kit generate:sqlite",
     "migrate:local": "wrangler d1 migrations apply nyatinte-shelf-db --local",
+    "migrate:remote": "wrangler d1 migrations apply nyatinte-shelf-db --remote",
+    "log": "wrangler pages deployment tail",
     "studio": "drizzle-kit studio"
   },
   "dependencies": {
