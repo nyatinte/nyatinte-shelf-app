@@ -7,18 +7,14 @@ import { z } from 'zod';
 import style from './style.css?url';
 import { scraper } from './lib/scraper';
 import { asc } from 'drizzle-orm';
+import { apiKeyValidator } from './middlewares/apiKeyValidator';
 
-type Bindings = {
+export type Bindings = {
   DB: D1Database;
+  API_KEY: string;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
-
-app.get('/api/clock', (c) => {
-  return c.json({
-    time: new Date().toLocaleTimeString(),
-  });
-});
 
 app.get(
   'api/articles',
@@ -49,6 +45,7 @@ app.get(
 
 app.post(
   'api/articles',
+  apiKeyValidator,
   zValidator(
     'json',
     z.object({
