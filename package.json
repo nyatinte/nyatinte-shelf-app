@@ -9,7 +9,8 @@
     "migrate:local": "wrangler d1 migrations apply nyatinte-shelf-db --local",
     "migrate:remote": "wrangler d1 migrations apply nyatinte-shelf-db --remote",
     "log": "wrangler pages deployment tail",
-    "studio": "drizzle-kit studio"
+    "studio": "drizzle-kit studio",
+    "check": "biome check --apply ./src"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.1",
@@ -28,6 +29,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.6.3",
     "@cloudflare/workers-types": "^4.20240208.0",
     "@hono/vite-cloudflare-pages": "^0.2.4",
     "@hono/vite-dev-server": "^0.9.0",
