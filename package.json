@@ -10,7 +10,8 @@
     "migrate:remote": "wrangler d1 migrations apply nyatinte-shelf-db --remote",
     "log": "wrangler pages deployment tail",
     "studio": "drizzle-kit studio",
-    "check": "biome check --apply ./src"
+    "check": "biome check --apply ./src",
+    "check-unsafe": "biome check --apply-unsafe ./src"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.2.1",
