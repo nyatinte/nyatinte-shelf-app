@@ -4,7 +4,7 @@ import { drizzle } from 'drizzle-orm/d1'
 import { Hono } from 'hono'
 import { renderToString } from 'react-dom/server'
 import { z } from 'zod'
-import { scraper } from './lib/scraper'
+import { getMetadata } from './lib/getMetadata'
 import { apiKeyValidator } from './middlewares/apiKeyValidator'
 import { articles as articlesTable } from './schema'
 import style from './style.css?url'
@@ -61,7 +61,7 @@ app.post(
   async (c) => {
     const { url } = await c.req.valid('json')
 
-    const meta = await scraper(url)
+    const meta = await getMetadata(url)
 
     const db = drizzle(c.env.DB)
 

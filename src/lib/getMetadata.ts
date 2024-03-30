@@ -1,7 +1,14 @@
-export const scraper = async (url: string) => {
+export const getMetadata = async (url: string) => {
   const res = await fetch(url)
   const html = await res.text()
 
+  return getMetadataFromHtml({ html, url })
+}
+
+export const getMetadataFromHtml = ({
+  html,
+  url,
+}: { html: string; url: string }) => {
   const titleMatch =
     html.match(/<title>(.*?)<\/title>/) ||
     html.match(/<meta property="og:title" content="(.*?)"/) ||
