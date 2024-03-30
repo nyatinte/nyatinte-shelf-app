@@ -5,11 +5,15 @@
   },
   "javascript": {
     "formatter": {
+      "enabled": true,
+      "semicolons": "asNeeded",
       "quoteStyle": "single",
-      "semicolons": "asNeeded"
+      "jsxQuoteStyle": "double",
+      "indentStyle": "space"
     }
   },
   "formatter": {
+    "enabled": true,
     "indentStyle": "space"
   },
   "linter": {
@@ -18,7 +22,19 @@
       "recommended": true,
       "nursery": {
         "useSortedClasses": "warn"
+      },
+      "suspicious": {
+        "noImplicitAnyLet": "warn"
+      },
+      "correctness": {
+        "noUnusedImports": "warn"
       }
     }
+  },
+  "json": {
+    "formatter": {
+      "enabled": true
+    },
+    "parser": { "allowComments": true }
   }
 }

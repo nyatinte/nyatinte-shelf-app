@@ -6,7 +6,7 @@ import { renderToString } from 'react-dom/server'
 import { z } from 'zod'
 import { scraper } from './lib/scraper'
 import { apiKeyValidator } from './middlewares/apiKeyValidator'
-import { Article, articles as articlesTable } from './schema'
+import { articles as articlesTable } from './schema'
 import style from './style.css?url'
 
 export type Bindings = {
