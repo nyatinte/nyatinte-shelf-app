@@ -1,32 +1,32 @@
-import './style.css';
-import { createRoot } from 'react-dom/client';
 import {
   QueryClient,
   QueryClientProvider,
   useInfiniteQuery,
-} from '@tanstack/react-query';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import { useEffect, useRef } from 'react';
+} from '@tanstack/react-query'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useEffect, useRef } from 'react'
+import { createRoot } from 'react-dom/client'
+import './style.css'
 
-import { LinkCard, LinkCardSkeleton } from './components/link-card';
-import { Article } from './schema';
+import { LinkCard, LinkCardSkeleton } from './components/link-card'
+import type { Article } from './schema'
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient()
 
-const LIMIT = 10;
+const LIMIT = 10
 async function fetchPage(
   limit: number,
-  offset: number = 0
+  offset = 0,
 ): Promise<{ articles: Article[]; nextOffset: number }> {
-  const url = new URL('/api/articles', window.location.origin);
-  url.searchParams.set('page', offset.toString());
-  url.searchParams.set('limit', limit.toString());
+  const url = new URL('/api/articles', window.location.origin)
+  url.searchParams.set('page', offset.toString())
+  url.searchParams.set('limit', limit.toString())
 
   const articles = (await fetch(url.toString()).then((res) =>
-    res.json()
-  )) as Article[];
+    res.json(),
+  )) as Article[]
 
-  return { articles, nextOffset: offset + 1 };
+  return { articles, nextOffset: offset + 1 }
 }
 
 function App() {
@@ -46,10 +46,10 @@ function App() {
     getNextPageParam: (_lastGroup, groups) =>
       // 10個ずつ取得しているので、次のページがあるかどうかは LIMIT で割り切れるかどうかで判断する
       groups.length % LIMIT === 0 ? groups.length : undefined,
-  });
-  const allArticles = data ? data.pages.flatMap((d) => d.articles) : [];
+  })
+  const allArticles = data ? data.pages.flatMap((d) => d.articles) : []
 
-  const parentRef = useRef<HTMLDivElement>(null);
+  const parentRef = useRef<HTMLDivElement>(null)
 
   const rowVirtualizer = useVirtualizer({
     count: hasNextPage ? allArticles.length + 1 : allArticles.length,
@@ -59,13 +59,13 @@ function App() {
     estimateSize: () => 128,
     // 10 → 10個前のアイテムが表示された時点で追加のアイテムをフェッチする
     overscan: LIMIT,
-  });
+  })
 
   useEffect(() => {
-    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse();
+    const [lastItem] = [...rowVirtualizer.getVirtualItems()].reverse()
 
     if (!lastItem) {
-      return;
+      return
     }
 
     if (
@@ -73,21 +73,22 @@ function App() {
       hasNextPage &&
       !isFetchingNextPage
     ) {
-      fetchNextPage();
+      fetchNextPage()
     }
   }, [
     hasNextPage,
     fetchNextPage,
     allArticles.length,
     isFetchingNextPage,
-    rowVirtualizer.getVirtualItems(),
-  ]);
+    rowVirtualizer.getVirtualItems,
+  ])
 
   return (
-    <div className='container'>
+    <div className="container">
       {status === 'pending' ? (
-        <div className='space-y-4'>
+        <div className="space-y-4">
           {Array.from({ length: 10 }).map((_, i) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: Skeletonのため、indexをkeyとして使用している
             <LinkCardSkeleton key={i} />
           ))}
         </div>
@@ -96,22 +97,22 @@ function App() {
       ) : (
         <div
           ref={parentRef}
-          className='h-full w-full overflow-y-auto bg-background'
+          className="h-full w-full overflow-y-auto bg-background"
         >
           <div
-            className='relative flex flex-col items-center justify-center w-full'
+            className="relative flex w-full flex-col items-center justify-center"
             style={{
               height: `${rowVirtualizer.getTotalSize()}px`,
             }}
           >
             {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const isLoaderRow = virtualRow.index > allArticles.length - 1;
-              const article = allArticles[virtualRow.index];
+              const isLoaderRow = virtualRow.index > allArticles.length - 1
+              const article = allArticles[virtualRow.index]
 
               return (
                 <div
                   key={virtualRow.index}
-                  className='absolute top-0 left-0 w-full'
+                  className="absolute top-0 left-0 w-full"
                   style={{
                     height: `${virtualRow.size}px`,
                     transform: `translateY(${virtualRow.start}px)`,
@@ -119,8 +120,9 @@ function App() {
                 >
                   {isLoaderRow ? (
                     hasNextPage ? (
-                      <div className='space-y-4'>
+                      <div className="space-y-4">
                         {Array.from({ length: 10 }).map((_, i) => (
+                          // biome-ignore lint/suspicious/noArrayIndexKey: Skeletonのため、indexをkeyとして使用している
                           <LinkCardSkeleton key={i} />
                         ))}
                       </div>
@@ -131,19 +133,20 @@ function App() {
                     <LinkCard {...article} />
                   )}
                 </div>
-              );
+              )
             })}
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
 
-const domNode = document.getElementById('root')!;
-const root = createRoot(domNode);
+// biome-ignore lint/style/noNonNullAssertion: index.tsxにて、<div id="root">が存在することを保証している
+const domNode = document.getElementById('root')!
+const root = createRoot(domNode)
 root.render(
   <QueryClientProvider client={queryClient}>
     <App />
-  </QueryClientProvider>
-);
+  </QueryClientProvider>,
+)
