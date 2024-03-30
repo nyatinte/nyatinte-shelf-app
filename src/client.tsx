@@ -7,11 +7,13 @@ import {
 } from '@tanstack/react-query';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { useEffect, useRef } from 'react';
-import { Article } from '.';
+
 import { LinkCard, LinkCardSkeleton } from './components/link-card';
+import { Article } from './schema';
 
 const queryClient = new QueryClient();
 
+const LIMIT = 10;
 async function fetchPage(
   limit: number,
   offset: number = 0
@@ -40,8 +42,10 @@ function App() {
     queryKey: ['articles'],
     initialPageParam: 0,
     queryFn: (ctx) =>
-      fetchPage(10, typeof ctx.pageParam === 'number' ? ctx.pageParam : 0),
-    getNextPageParam: (_lastGroup, groups) => groups.length,
+      fetchPage(LIMIT, typeof ctx.pageParam === 'number' ? ctx.pageParam : 0),
+    getNextPageParam: (_lastGroup, groups) =>
+      // 10個ずつ取得しているので、次のページがあるかどうかは LIMIT で割り切れるかどうかで判断する
+      groups.length % LIMIT === 0 ? groups.length : undefined,
   });
   const allArticles = data ? data.pages.flatMap((d) => d.articles) : [];
 
@@ -54,7 +58,7 @@ function App() {
     // 推定されるアイテムの高さ
     estimateSize: () => 128,
     // 10 → 10個前のアイテムが表示された時点で追加のアイテムをフェッチする
-    overscan: 0,
+    overscan: LIMIT,
   });
 
   useEffect(() => {
@@ -83,8 +87,8 @@ function App() {
     <div className='container'>
       {status === 'pending' ? (
         <div className='space-y-4'>
-          {Array.from({ length: 10 }).map(() => (
-            <LinkCardSkeleton />
+          {Array.from({ length: 10 }).map((_, i) => (
+            <LinkCardSkeleton key={i} />
           ))}
         </div>
       ) : status === 'error' ? (

@@ -1,0 +1,10 @@
+// Bun Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`scraper snapshot 1`] = `
+{
+  "description": "なんでもEATは、｢ご飯何がいい？｣｢なんでもいいよ｣というやり取りを解決するサービスです。",
+  "favicon": "https://nandemo-eat.vercel.app/favicon.ico",
+  "image": "https://nandemo-eat.vercel.app/%E3%81%AA%E3%82%93%E3%81%A7%E3%82%82EAT.png",
+  "title": "なんでもEAT",
+}
+`;

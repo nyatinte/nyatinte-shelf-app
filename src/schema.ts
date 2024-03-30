@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm';
+import { InferSelectModel, relations, sql } from 'drizzle-orm';
 
 import {
   integer,
@@ -10,10 +10,16 @@ import {
 export const articles = sqliteTable('articles', {
   id: integer('id').primaryKey().notNull(),
   url: text('url').notNull(),
+  title: text('title'),
+  description: text('description'),
+  image: text('image'),
+  favicon: text('favicon'),
   createdAt: integer('created_at', { mode: 'timestamp' })
     .notNull()
     .default(sql`(unixepoch())`),
 });
+
+export type Article = InferSelectModel<typeof articles>;
 
 export const articlesRelations = relations(articles, ({ many }) => ({
   articlesToTags: many(articlesToTags),

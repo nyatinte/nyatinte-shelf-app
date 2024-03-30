@@ -1,15 +1,8 @@
 import { FC } from 'react';
 import { Skeleton } from './ui/skeleton';
+import { Article } from '@/schema';
 
-type LinkCardProps = {
-  title?: string | undefined;
-  description?: string | undefined;
-  imageSrc: string;
-  imageAlt: string;
-  url: string;
-  id: number;
-  createdAt: string;
-};
+type LinkCardProps = Article;
 const LinkCard: FC<LinkCardProps> = (props) => {
   return (
     <a
@@ -20,11 +13,7 @@ const LinkCard: FC<LinkCardProps> = (props) => {
         <h2 className='font-semibold'>{props.title}</h2>
         <p className='text-sm'>{props.description}</p>
       </div>
-      <img
-        className='h-full object-contain'
-        src={props.imageSrc}
-        alt={props.imageAlt}
-      />
+      <img className='h-full object-contain' src={props.image || ''} alt='' />
     </a>
   );
 };
