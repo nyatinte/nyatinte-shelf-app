@@ -9,7 +9,7 @@ import {
 
 export const articles = sqliteTable('articles', {
   id: integer('id').primaryKey().notNull(),
-  url: text('url').notNull(),
+  url: text('url').notNull().unique(),
   title: text('title'),
   description: text('description'),
   image: text('image'),

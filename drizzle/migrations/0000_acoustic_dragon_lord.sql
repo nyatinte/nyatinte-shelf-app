@@ -1,6 +1,10 @@
 CREATE TABLE `articles` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`url` text NOT NULL,
+	`title` text,
+	`description` text,
+	`image` text,
+	`favicon` text,
 	`created_at` integer DEFAULT (unixepoch()) NOT NULL
 );
 --> statement-breakpoint
@@ -16,3 +20,5 @@ CREATE TABLE `tags` (
 	`id` integer PRIMARY KEY NOT NULL,
 	`name` text NOT NULL
 );
+--> statement-breakpoint
+CREATE UNIQUE INDEX `articles_url_unique` ON `articles` (`url`);

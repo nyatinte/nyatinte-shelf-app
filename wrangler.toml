@@ -12,5 +12,5 @@
 [[d1_databases]]
 binding = "DB"
 database_name = "nyatinte-shelf-db"
-database_id = "d061f83a-0d18-4a97-9328-e1a24a4348d6"
+database_id = "667348a5-853b-49a3-bce7-8e355cf003d1"
 migrations_dir = "drizzle/migrations"

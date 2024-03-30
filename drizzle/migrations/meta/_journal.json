@@ -5,15 +5,8 @@
     {
       "idx": 0,
       "version": "5",
-      "when": 1711555646016,
-      "tag": "0000_hard_sleeper",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "5",
-      "when": 1711717969391,
-      "tag": "0001_unusual_shadow_king",
+      "when": 1711796006678,
+      "tag": "0000_acoustic_dragon_lord",
       "breakpoints": true
     }
   ]
